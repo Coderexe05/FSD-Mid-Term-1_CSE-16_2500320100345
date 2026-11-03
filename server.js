@@ -1,4 +1,4 @@
-import express from 'express';
+const express = require('express');
 const app = express();
 const port = 3000;
 
@@ -45,6 +45,47 @@ app.get('/api/students/:id', (req, res) => {
   }
   
   res.status(200).json(student);
+});
+
+app.put('/api/students/:id', (req, res) => {
+  const studentIndex = students.findIndex(s => s.id == req.params.id);
+  
+  if (studentIndex === -1) {
+    return res.status(404).json({ 
+      error: 'Student not found' 
+    });
+  }
+  
+  const { name, email, course, age } = req.body;
+  
+  students[studentIndex] = {
+    ...students[studentIndex],
+    ...(name && { name }),
+    ...(email && { email }),
+    ...(course && { course }),
+    ...(age && { age })
+  };
+  
+  res.status(200).json({
+    message: 'Student record updated successfully',
+    student: students[studentIndex]
+  });
+});
+
+app.delete('/api/students/:id', (req, res) => {
+  const studentIndex = students.findIndex(s => s.id == req.params.id);
+  
+  if (studentIndex === -1) {
+    return res.status(404).json({ 
+      error: 'Student not found' 
+    });
+  }
+  
+  students.splice(studentIndex, 1);
+  
+  res.status(200).json({
+    message: 'Student record deleted successfully'
+  });
 });
 
 app.listen(port, () => {
